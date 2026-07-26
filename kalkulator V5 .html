@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Kalkulator Premium - Lord_Dikzz</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: radial-gradient(circle at top left, #1e293b, #0f172a);
+      color: white;
+      overflow: hidden;
+    }
+
+    /* --- HAK CIPTA --- */
+    .copyright {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      font-weight: bold;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 1px;
+    }
+
+    /* --- KALKULATOR UTAMA --- */
+    .calculator {
+      background: rgba(20, 25, 40, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      padding: 30px 25px;
+      width: 90%;
+      max-width: 360px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Layar Kalkulator */
+    .display-container {
+      width: 100%;
+      height: 90px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-end;
+      margin-bottom: 25px;
+      padding: 0 10px;
+      overflow-x: auto;
+    }
+
+    .display {
+      font-size: 55px;
+      font-weight: 300;
+      color: #f8fafc;
+      letter-spacing: 2px;
+      white-space: nowrap;
+    }
+
+    /* Grid Tombol */
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .btn {
+      background: #1e293b;
+      border: none;
+      border-radius: 20px;
+      font-size: 26px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      aspect-ratio: 1; /* Membuat tombol kotak sempurna */
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:active {
+      transform: scale(0.92);
+      background: #334155;
+    }
+
+    /* Tombol Spesial (Sesuai Gambar) */
+    .btn-red { color: #f87171; font-weight: bold; } /* Warna merah untuk C dan Hapus */
+    .btn-cyan { color: #22d3ee; font-size: 32px; } /* Warna biru cyan untuk operator */
+    
+    .btn-zero {
+      grid-column: span 2;
+      aspect-ratio: auto;
+      border-radius: 20px;
+      justify-content: flex-start;
+      padding-left: 30px;
+    }
+
+    .btn-equals {
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      color: white;
+      font-size: 35px;
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-equals:active {
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    }
+
+
+    /* --- MODAL POP-UP PREMIUM --- */
+    .modal-overlay {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      z-index: 10;
+      justify-content: center;
+      align-items: center;
+      border-radius: 30px;
+    }
+
+    .modal-content {
+      background: #0f172a;
+      width: 90%;
+      border-radius: 20px;
+      padding: 25px 20px;
+      text-align: center;
+      border: 1px solid #334155;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      animation: popUp 0.3s ease-out;
+    }
+
+    @keyframes popUp {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .badge {
+      background: rgba(250, 204, 21, 0.15);
+      color: #facc15;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+      display: inline-block;
+      margin-bottom: 10px;
+      border: 1px solid rgba(250, 204, 21, 0.3);
+    }
+
+    .modal-content h2 { font-size: 20px; margin-bottom: 5px; }
+    .modal-content p { color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
+
+    .plan-card {
+      background: #1e293b;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .plan-card.active {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: #6366f1;
+    }
+
+    .plan-info { text-align: left; margin-left: 10px; }
+    .plan-info .title { display: block; font-size: 13px; color: #cbd5e1; }
+    .plan-info .price { font-size: 16px; font-weight: bold; }
+
+    .btn-buy {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .btn-later {
+      background: none; border: none; color: #94a3b8;
+      margin-top: 12px; font-size: 13px; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="copyright">By Lord_Dikzz</div>
+
+  <div class="calculator">
+    <div class="display-container">
+      <div class="display" id="display">9×9</div>
+    </div>
+
+    <div class="buttons">
+      <button class="btn btn-red" onclick="clearDisplay()">C</button>
+      <button class="btn btn-red" onclick="deleteLast()">⌫</button>
+      <button class="btn btn-cyan" onclick="append('%')">%</button>
+      <button class="btn btn-cyan" onclick="append('÷')">÷</button>
+      
+      <button class="btn" onclick="append('7')">7</button>
+      <button class="btn" onclick="append('8')">8</button>
+      <button class="btn" onclick="append('9')">9</button>
+      <button class="btn btn-cyan" onclick="append('×')">×</button>
+      
+      <button class="btn" onclick="append('4')">4</button>
+      <button class="btn" onclick="append('5')">5</button>
+      <button class="btn" onclick="append('6')">6</button>
+      <button class="btn btn-cyan" onclick="append('-')">-</button>
+      
+      <button class="btn" onclick="append('1')">1</button>
+      <button class="btn" onclick="append('2')">2</button>
+      <button class="btn" onclick="append('3')">3</button>
+      <button class="btn btn-cyan" onclick="append('+')">+</button>
+      
+      <button class="btn btn-zero" onclick="append('0')">0</button>
+      <button class="btn" onclick="append('.')">.</button>
+      <button class="btn btn-equals" onclick="handleEquals()">=</button>
+    </div>
+
+    <div id="premiumModal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="badge">✨ PREMIUM</div>
+        <h2>Upgrade ke Premium</h2>
+        <p>Dapatkan akses kalkulator penuh</p>
+
+        <div class="plan-card active" id="cardBulanan" onclick="selectPlan('bulanan')">
+          <div class="plan-info">
+            <span class="title">Bulanan</span>
+            <span class="price">Rp 15.000 <span style="font-size: 11px; font-weight: normal;">/bulan</span></span>
+          </div>
+        </div>
+
+        <div class="plan-card" id="cardTahunan" onclick="selectPlan('tahunan')">
+          <div class="plan-info">
+            <span class="title">Tahunan (HEMAT 33%)</span>
+            <span class="price">Rp 120.000 <span style="font-size: 11px; font-weight: normal;">/tahun</span></span>
+          </div>
+        </div>
+
+        <button id="buyButton" class="btn-buy" onclick="fakeBuy()">Beli Bulanan</button>
+        <button class="btn-later" onclick="closeModal()">Nanti saja</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const modal = document.getElementById('premiumModal');
+    let isSubscribed = false; // Status langganan (prank)
+
+    // Fungsi menambah angka/simbol ke layar
+    function append(value) {
+      if(display.innerText === '0' || display.innerText === '9×9' || display.innerText === 'Error') {
+        display.innerText = '';
+      }
+      display.innerText += value;
+    }
+    
+    // Fungsi hapus semua (C)
+    function clearDisplay() { 
+      display.innerText = '0'; 
+    }
+
+    // Fungsi hapus satu karakter (⌫)
+    function deleteLast() {
+      if(display.innerText.length > 1) {
+        display.innerText = display.innerText.slice(0, -1);
+      } else {
+        display.innerText = '0';
+      }
+    }
+
+    // Fungsi menekan sama dengan (=)
+    function handleEquals() {
+      if(display.innerText === '0' || display.innerText === '') return;
+
+      if(!isSubscribed) {
+        // Tampilkan Pop-up Premium
+        modal.style.display = 'flex';
+      } else {
+        calculateResult();
+      }
+    }
+
+    // Fungsi hitung angka (mengubah lambang × dan ÷ agar terbaca komputer)
+    function calculateResult() {
+      try {
+        let expression = display.innerText.replace(/×/g, '*').replace(/÷/g, '/');
+        display.innerText = eval(expression);
+      } catch (e) {
+        display.innerText = 'Error';
+      }
+    }
+
+    // --- FUNGSI MODAL PREMIUM ---
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    function selectPlan(plan) {
+      const cardB = document.getElementById('cardBulanan');
+      const cardT = document.getElementById('cardTahunan');
+      const btn = document.getElementById('buyButton');
+
+      if(plan === 'bulanan') {
+        cardB.classList.add('active');
+        cardT.classList.remove('active');
+        btn.innerText = 'Beli Bulanan';
+      } else {
+        cardT.classList.add('active');
+        cardB.classList.remove('active');
+        btn.innerText = 'Beli Tahunan';
+      }
+    }
+
+    function fakeBuy() {
+      alert("Pembayaran Berhasil! 💸 Fitur Kalkulator Premium kini aktif. Lord_Dikzz mengucapkan terima kasih!");
+      isSubscribed = true;
+      modal.style.display = 'none';
+      calculateResult(); // Langsung tunjukkan hasil setelah "bayar"
+    }
+  </script>
+</body>
+</html>
